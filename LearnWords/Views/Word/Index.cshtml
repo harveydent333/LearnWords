@@ -1,0 +1,28 @@
+﻿@model IEnumerable<LearnWords.Entities.Word>
+
+@{
+    Layout = "_Layout";
+}
+<script>
+    function searchForPartOfSpeech() {
+        let partOfSpeechSelect = document.getElementById('partOfSpeechSelect');
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "/Words/" + partOfSpeechSelect.value,
+            dataType: 'html',
+            traditional: true,
+            success: function (data) {
+                console.log('success', arguments);
+                $("#main").html(data);
+            },
+            error: function () {
+                console.log('error', arguments);
+            }
+        });
+    }
+</script>
+
+<div id="main">
+    @await Html.PartialAsync("Words.cshtml")
+</div>

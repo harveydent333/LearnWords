@@ -1,0 +1,184 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model int
+
+@{
+    Layout = "_Layout";
+}
+
+<script>
+    var words;
+    var word;
+    var partsOfSpeech;
+    var randWords;
+    var isComplete = false;
+    window.onload = init;
+
+    function init() {
+        var data = $.ajax({
+            type: "GET",
+            url: "/GetLearnData/" + "@Model",
+            dataType: "json",
+            async: false,
+            traditional: true,
+            success: function (data) {
+                return data;
+            },
+            error: function () {
+                console.log("error", arguments);
+            },
+        });
+
+        var dataParts = $.ajax({
+            type: "GET",
+            url: "/GetPartsOfSpeech/",
+            dataType: "json",
+            async: false,
+            traditional: true,
+            success: function (data) {
+                return data;
+            },
+            error: function () {
+                console.log("error", arguments);
+            },
+        });
+
+        partsOfSpeech = dataParts.responseJSON;
+        words = data.responseJSON.words;
+        word = data.responseJSON.words[0];
+
+        setQuestionText();
+    }
+
+    function showAnswer() {
+        document.getElementById("answerInput").value = word.english;
+    }
+
+    function randomWord() {
+        let submit = document.getElementById("submitButton");
+        submit.hidden = true;
+
+        randWords = words.filter((w) => w.isLearnedInBlock === false);
+
+        var rnd = Math.floor(Math.random() * randWords.length);
+        if (randWords[rnd].id !== word.id) {
+            word = randWords[rnd];
+        }
+
+        setQuestionText();
+
+        let answerInput = document.getElementById("answerInput");
+        answerInput.value = "";
+    }
+
+    function submitWord() {
+        let submit = document.getElementById("submitButton");
+        submit.hidden = true;
+
+        word.isLearnedInBlock = true;
+        randWords = words.filter((w) => w.isLearnedInBlock === false);
+
+        if (words.find((w) => w.isLearnedInBlock === false) === undefined) {
+            isComplete = true;
+        } else {
+            randomWord();
+        }
+
+        if (isComplete) {
+            let questionDiv = document.getElementById("questionDiv");
+            questionDiv.hidden = true;
+
+            let completeButton = document.getElementById("completeButton");
+            completeButton.hidden = false;
+        } else {
+            setQuestionText();
+
+            let answerInput = document.getElementById("answerInput");
+            answerInput.value = "";
+        }
+    }
+
+    function setQuestionText() {
+        let question = document.getElementById("question");
+        question.innerHTML = word.russian;
+
+        let partOfSpeech = document.getElementById("partOfSpeech");
+        partOfSpeech.innerHTML = partsOfSpeech.find((p) => p.value === word.partOfSpeech).name;
+    }
+
+    function checkAnswer() {
+        let input = document.getElementById("answerInput");
+
+        if (word.english !== input.value) {
+            let result = document.getElementById("result");
+            result.innerHTML = "It's wrong!";
+
+            setTimeout(function () {
+                result.innerHTML = "";
+            }, 2000);
+        }
+
+        if (word.english === input.value || word.english === 'to ' + input.value) {
+            let result = document.getElementById("result");
+            result.innerHTML = "It's correct!";
+
+            let submit = document.getElementById("submitButton");
+            submit.hidden = false;
+
+            setTimeout(function () {
+                result.innerHTML = "";
+            }, 2000);
+        }
+    }
+
+    function handleKeyPress(e) {
+        let answerButton = document.getElementById("answerButton");
+        let submitButton = document.getElementById("submitButton");
+        e = e || window.event;
+
+        if (e.keyCode === 13 && submitButton.hidden === false) {
+            submitButton.click();
+            return false;
+        }
+
+        if (e.keyCode === 13) {
+            answerButton.click();
+            return false;
+        }
+    }
+</script>
+
+<div>
+    <div style="width: 800px; display: block;margin-left: auto; margin-right: auto; border: solid black">
+        <div id="questionDiv">
+            <table>
+                <tr>
+                    <td>
+                        <p id="question"></p>
+                    </td>
+                    <td width="80px"></td>
+                    <td>
+                        <p id="partOfSpeech"></p>
+                    </td>
+                </tr>
+            </table>
+
+            <input onkeypress="handleKeyPress()" id="answerInput" style="width: 400px" />
+            <p id="result"></p>
+
+            <div>
+                <a hidden onclick="submitWord()" id="submitButton" class="btn btn-warning">Submit Word</a>
+                <a onclick="checkAnswer()" id="answerButton" class="btn btn-info">Answer</a>
+                <a onclick="showAnswer()" id="showButton" class="btn btn-info">Show Right Answer</a>
+                <a onclick="randomWord()" class="btn btn-secondary">Next Random Word</a>
+            </div>
+            <br />
+        </div>
+        <div>
+            <form method="post" asp-action="SubmitBlock" asp-controller="Block">
+                <input hidden name="id" value="@Model" />
+                <button id="completeButton" hidden type="submit" class="btn btn-success">SubmitBlock</button>
+            </form>
+        </div>
+        <a asp-action="Blocks" class="btn btn-secondary">Back</a>
+    </div>
+</div>

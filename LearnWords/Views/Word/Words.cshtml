@@ -1,0 +1,61 @@
+﻿@using LearnWords.Entities
+@using LearnWords.Extensions
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+<div>
+    <div>
+        <p>Всего слов: @ViewBag.AllCount</p>
+        <p>Новые слова: @ViewBag.NewWords</p>
+        <a asp-controller="Word" asp-action="CreateWord" class="btn btn-warning">Add word</a>
+        <br/>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">English</th>
+                    <th scope="col">Russian</th>
+                    <th scope="col">
+                        Part Of Speech
+                        <select id="partOfSpeechSelect" onchange="searchForPartOfSpeech()" asp-items="Html.GetEnumSelectList<PartsOfSpeech>()">
+                            <option selected="selected">None</option>
+                        </select>
+                    </th>
+                    <th scope="col">Is New</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Word word in Model)
+                {
+                    <tr scope="row">
+                        <td>
+                            <input hidden readonly value="@word.Id">
+                        </td>
+                        <td>
+                            <p> @word.English</p>
+                        </td>
+                        <td>
+                            <p> @word.Russian</p>
+                        </td>
+                        <td>
+                            <p> @word.PartOfSpeech.GetDisplayName()</p>
+                        </td>
+                        <td>
+                            <p> @word.IsNew</p>
+                        </td>
+                        <td>
+                            <a asp-route-id="@word.Id" asp-action="UpdateWord" asp-controller="Word" class="btn btn-info">Update</a>
+                        </td>
+                        <td>
+                            <form method="post" asp-action="DeleteWord" asp-controller="Word">
+                                <input hidden name="id" value="@word.Id" />
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

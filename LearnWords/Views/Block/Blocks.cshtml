@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using LearnWords.Entities
+@model IEnumerable<LearnWords.Entities.BlockOfWords>
+
+@{
+    Layout = "_Layout";
+}
+<div>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Count</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">RepeatCount</th>
+                    <th scope="col">NextRepeat</th>
+                    <th scope="col">Deleted</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (BlockOfWords block in Model)
+                {
+                    <tr scope="row">
+                        <td>
+                            <p> @block.Id</p>
+                        </td>
+                        <td>
+                            <p> @block.Words.Count</p>
+                        </td>
+                        <td>
+                            <p> @block.Created</p>
+                        </td>
+                        <td>
+                            <p> @block.RepeatCount</p>
+                        </td>
+                        <td>
+                            <p> @block.NextRepeat</p>
+                        </td>
+                        <td>
+                            <p> @block.Deleted</p>
+                        </td>
+                        <td>
+                            <a asp-route-id="@block.Id" asp-action="Details" asp-controller="Block" class="btn btn-info">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <form method="post" asp-action="CreateNewBlock" asp-controller="Block">
+            Количество слов в блоке: <input style="width: 400px" name="NewWordsCount" />
+            <button type="submit" class="btn btn-warning">Create New Block</button>
+        </form>
+    </div>
+</div>

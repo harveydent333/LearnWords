@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using LearnWords.Entities
+@model Word
+
+<form method="POST" asp-action="Update" asp-controller="Word">
+    <table>
+        <tr>
+            <td>
+                <input asp-for="Id" hidden="" /><br />
+            </td>
+        </tr>
+        <br />
+        <tr>
+            <td>
+                <label asp-for="Russian">Russian:</label>
+            </td>
+            <td>
+                <input style="width: 400px" asp-for="Russian" /><br />
+            </td>
+        </tr>
+        <br />
+        <tr>
+            <td>
+                <label asp-for="English">English:</label>
+            </td>
+            <td>
+                <input style="width: 400px" asp-for="English" /><br />
+            </td>
+        </tr>
+        <br />
+        <tr>
+            <td>
+                <select asp-for="@Model.PartOfSpeech" asp-items="Html.GetEnumSelectList<PartsOfSpeech>()">
+                </select>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <input class="btn btn-success" type="submit" value="Update" />
+    <br />
+    <a asp-action="Words" class="btn btn-secondary">Cancel</a>
+    <br />
+</form>

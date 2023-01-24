@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using LearnWords.Entities
+@model LearnWords.Models.BlockWordsModel
+
+@{
+    Layout = "_Layout";
+}
+<div>
+    <div>
+        <p> Ид: @Model.Id</p>
+        <p> Создан: @Model.Created</p>
+        <p> Количество повторений: @Model.RepeatCount</p>
+        <p> Следующее повторение: @Model.NextRepeat</p>
+    </div>
+    <br/>
+    <a asp-route-id="@Model.Id" asp-action="Learn" asp-controller="Block" class="btn btn-warning">Learn Block</a>
+    <a asp-action="Blocks" class="btn btn-secondary">Cancel</a>
+    <br/>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">English</th>
+                    <th scope="col">Russian</th>
+                    <th scope="col">PartOfSpeech</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Word word in Model.Words)
+                {
+                    <tr scope="row">
+                        <td>
+                            <p> @word.English</p>
+                        </td>
+                        <td>
+                            <p> @word.Russian</p>
+                        </td>
+                        <td>
+                            <p> @word.PartOfSpeech</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
